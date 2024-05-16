@@ -2,7 +2,14 @@
 
 scaling high quality instructional coaching
 
+
 ## progress as of 5.15
+
+
+
+https://github.com/agasthyaps/nisa/assets/31672319/72aa5ddb-51f1-4e0d-b6b7-c93cb4878a62
+
+
 
 - Accesses notes that a coach has taken about the teacher
 
