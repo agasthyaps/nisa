@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - nisa.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="background-grain"></div>
+    <div class="container">
+        <header>
+            <div class="branding">nisa.ai</div>
+            <nav>
+                <ul>
+                    <li>switch to coach view</li>
+                </ul>
+            </nav>
+        </header>
+        <div class="content">
+            <form action="/generate_session" method="post" onsubmit="showLoading()">
+                <h2>Welcome, <select name="user_name" id="user-select">
+                    <option value="agasthya">Agasthya</option>
+                    <option value="gautam">Gautam</option>
+                    <option value="adam">Adam</option>
+                    <option value="sarah">Sarah</option>
+                    <option value="merlin">Merlin</option>
+                    <option value="vaish">Vaish</option>
+                    <option value="abhi">Abhi</option>
+                </select></h2>
+                <button type="submit">generate session</button>
+            </form>
+            <img id="loadinggif" src="{{ url_for('static', filename='loader4.gif') }}" alt="loading anim" hidden>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        function showLoading() {
+            const loading = document.getElementById('loadinggif');
+            loading.hidden = false; // Show the GIF when the form is submitted
+        }
+    </script>
+    
+</body>
+</html>

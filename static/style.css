@@ -1,0 +1,226 @@
+/* style.css */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: 'Quicksand', sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+h2 {
+  font-size: 2.5rem;
+  color: white;
+}
+
+#titleContainer {
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.background-grain {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, #20daa5 0%, #1585e1 100%);
+  z-index: 0;  /* Keep this at the base */
+}
+.background-grain::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("https://www.transparenttextures.com/patterns/paper-2.png");
+  z-index: 1;  /* Ensures grain is over gradient but under content */
+}
+.container {
+  position: relative;
+  z-index: 2;  /* Ensures all content is above the background and grain */
+  width: 100%;
+  height: 100%;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 30px;
+  color: white;
+  font-size: 2.3rem;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+nav ul li {
+  margin-left: 20px;
+}
+
+form {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Aligns content to the bottom */
+  align-items: center; /* Center content horizontally */
+  padding: 10px;
+  border-radius: 8px;
+  width: 80%;
+  margin-top: 20px;
+  color: white;
+  font-size: 2.3rem;
+  font-weight: light;
+}
+
+.content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chat {
+  width: 80%;
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.chat {
+  height: 200px;
+  overflow-y: auto;  /* Allows vertical scrolling */
+  position: relative;
+  display: flex;
+  flex-direction: column;  /* Start from bottom */
+  padding: 10px;
+  border-radius: 8px;
+  width: 80%;
+  margin-top: 20px;
+}
+
+
+.chat p {
+  width: 100%; /* Ensures <p> tags span the full width of the transcript area */
+  text-align: center; /* Centers text within the <p> tags */
+  margin: 5px 0; /* Provides a little vertical spacing between messages */
+  color: white;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out; /* Smooth transition for 'pushing up' effect */
+}
+
+.feedback {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Remove default styles and apply plain text-like appearance */
+select, button {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+select {
+  appearance: none; /* Removes default styling of dropdown */
+  border-bottom: 1px solid #ffffff; /* Underline to indicate it's interactive */
+  color: #605353;
+  padding: 5px;
+}
+
+button {
+  color: #ffffff;
+  padding: 5px;
+  text-decoration: underline;
+  display: inline-block;
+}
+
+/* Optional: Hover effects for better user interaction feedback */
+select:hover, button:hover {
+  color: #000000;
+}
+
+/* Specific styling for dynamicBtn */
+#dynamicBtn {
+  border: 2px solid #ffffff;  /* White outline */
+  background: transparent;  /* Ensures no background color */
+  text-decoration: none;
+}
+
+/* Specific hover effect for dynamicBtn */
+#dynamicBtn:hover {
+  color: #605353;  /* Optional: Change color on hover */
+  background-color: rgba(255, 255, 255, 0.2);  /* Semi-transparent white background on hover */
+}
+
+form {
+  padding: 150px;
+}
+
+/* Centering the audio visualizer container */
+#audioVisualizer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  border-radius: 8px;
+  margin-top: 20px;  /* Ensures there is space above this container */
+}
+
+/* Styling and resizing the audio visualizer image */
+#audioVisualizerImg {
+  width: 50%;  /* Resizes the image to 50% of its parent's width */
+  height: auto;  /* Keeps the image aspect ratio */
+  filter: brightness(0) invert(1);  /* Adjusts the color from red to white */
+}
+
+#loadinggif {
+  width: 10%;
+  filter: brightness(0) invert(1) opacity(.5);  /* Adjusts the color from red to white */
+}
+
+/* Ensures the UI Feedback is centered and not disrupting other styles */
+#uiFeedback {
+  text-align: center;
+  width: 100%;
+}
+
+.nav-item {
+  cursor: pointer;
+  padding: 10px; /* Adds padding for better clickability */
+}
+
+.nav-item.active {
+  text-decoration: underline; /* Underline for the active item */
+}
+
+#sessionContext {
+  transition: opacity 0.5s ease-in-out;
+  opacity: 0;  /* Start with the element hidden */
+  display: none; /* Use display none to remove the element from document flow when not visible */
+}
+
+#sessionContext.visible {
+  opacity: 1;
+  display: block; /* Ensure it's visible when it has content */
+}
+
+@keyframes fadeOpacity {
+  0%, 100% {
+      opacity: 1;
+  }
+  50% {
+      opacity: 0.5;
+  }
+}

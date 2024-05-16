@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>nisa.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="background-grain"></div>
+    <div class="container">
+        <header>
+            <div class="branding">nisa.ai</div>
+            <nav>
+              <ul>
+                  <li id="navPractice" class="nav-item active">practice</li>
+                  <li id="navPlayground" class="nav-item">playground</li>
+              </ul>
+          </nav>          
+        </header>
+        <div id="titleContainer"><h2 id="sessionContext" class="visible">{{ greeting }}</h2></div>
+        <div class="content">
+            <div id="chat-messages" class="chat">
+            </div>
+            <div id="feedback-area" class="feedback">
+              <audio id="audioPlayer" controls hidden></audio>
+              <div id="audioVisualizer">
+                <img id="audioVisualizerImg" src="{{ url_for('static', filename='audiowave.gif') }}" alt="audio visualizer" hidden>
+              </div>
+              <span id="uiFeedback"></span>
+              <button id="dynamicBtn" class="btn">start session</button>
+            </div>            
+        </div>
+    </div>
+    <script src="static/script.js"></script>
+</body>
+</html>
