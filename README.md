@@ -25,3 +25,7 @@ Next:
 - Implement low fidelity memory update function
 - Concurrently working on coach side: upload obs notes or (maybe) just send a text message with thoughts, and AI will confirm that they’ve understood coach correctly re: action steps/practice focus
 - Playground mode would be great to work on. Trying to figure out what’s the most important thing.
+
+## usage
+
+Haven't checked if this runs on another machine but as long as you have API keys for Groq, Deepgram, and OpenAI (`export PROVIDER_API_KEY='api-key'`) and install requirements.txt you should be able to run it (`python app.py`)
