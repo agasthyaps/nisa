@@ -1,6 +1,6 @@
 # nisa
 
-scaling high quality instructional coaching
+scaling high quality instructional coaching with genAI
 
 
 ## progress as of 5.15
