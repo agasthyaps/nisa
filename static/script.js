@@ -19,6 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
     addMessage(data, 'uiFeedback');
   });
 
+  socket.on('ui_sound', function(data) {
+    const audioPlayer = document.getElementById('audioUIPlayer');
+    audioPlayer.src = data.url;
+    audioPlayer.play();
+  });
+
   socket.on('play_audio', function(data) {
     console.log("Received 'play_audio' event:");
 
@@ -51,6 +57,42 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   });
 
+  function prepare_for_user_speech(data){
+    const user = data.user
+    const chatContainer = document.getElementById('chat-messages');
+    const userMessageContainer = document.createElement('p');
+    userMessageContainer.className = 'user';
+    // userMessageContainer.innerHTML = "<b>" + user + "</b>: ";
+    userMessageContainer.style.color = '#605353'; // Dark gray for user
+    userMessageContainer.style.fontStyle = 'regular';
+
+    chatContainer.appendChild(userMessageContainer);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+
+  socket.on('prepare_for_user_speech', function(data){
+    prepare_for_user_speech(data);
+  });
+
+  function display_live_transcription(data){
+    const chatContainer = document.getElementById('chat-messages');
+    const userParagraphs = chatContainer.querySelectorAll('p.user');
+    const mostRecentUserParagraph = userParagraphs[userParagraphs.length - 1];
+    const user = data.user;
+
+    // Check if the element exists before trying to use it
+    if (mostRecentUserParagraph) {
+      mostRecentUserParagraph.innerHTML = "<b>" + user + "</b>: " + data.speech;
+    }
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    updateOpacityBasedOnScroll(chatContainer);
+  }
+
+  socket.on('user_speech', function(data){
+    console.log("Received 'user_speech' event:");
+    console.log(data);
+    display_live_transcription(data);
+  });
 
   function addMessage(data, elemid) {
     const container = document.getElementById(elemid);
@@ -62,10 +104,10 @@ document.addEventListener('DOMContentLoaded', function() {
       newMessage.style.color = 'white'; // White for nisa
       newMessage.style.fontStyle = 'regular';
     } 
-    if (data.sender === 'user') {
-      newMessage.style.color = '#605353'; // Dark gray for user
-      newMessage.style.fontStyle = 'regular';
-    }
+    // if (data.sender === 'user') {
+    //   newMessage.style.color = '#605353'; // Dark gray for user
+    //   newMessage.style.fontStyle = 'regular';
+    // }
     if (data.sender === 'ui_flag') {
       newMessage.style.color = 'white'; // everything else
       newMessage.style.fontStyle = 'italic'; 
@@ -95,10 +137,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (isAtBottom) {
         // Apply fading opacity to the last few messages only when at the bottom
         messages.forEach((msg, index) => {
-            if (index < messages.length - 4) {
+            if (index < messages.length - 5) {
                 msg.style.opacity = 0;  // Older messages are not visible
             } else {
-                msg.style.opacity = 1 - 0.25 * (messages.length - index - 1);
+                msg.style.opacity = 1 - 0.20 * (messages.length - index - 1);
             }
         });
     } else {
@@ -138,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (button.textContent === "start session") {
         console.log("start session");
         document.getElementById('sessionContext').hidden = true;
+        document.getElementById('sessionContext').style.display = 'none';
         socket.emit('request_initial_message');
     } else {
         console.log("wrong text");

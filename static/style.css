@@ -186,8 +186,11 @@ form {
 }
 
 #loadinggif {
-  width: 10%;
-  filter: brightness(0) invert(1) opacity(.5);  /* Adjusts the color from red to white */
+  transition: opacity 0.5s ease-in-out;
+  width: 25%;
+  filter: invert(1) opacity(.75); 
+  height: auto;
+  /* clip-path: inset(100, 0px, 100px, 0);  */
 }
 
 /* Ensures the UI Feedback is centered and not disrupting other styles */
@@ -215,6 +218,10 @@ form {
   opacity: 1;
   display: block; /* Ensure it's visible when it has content */
 }
+
+/* .user{
+  color: #605353;
+} */
 
 @keyframes fadeOpacity {
   0%, 100% {

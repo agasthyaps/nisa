@@ -22,6 +22,7 @@ socketio = SocketIO(app)
 is_finals = []
 final = ""
 end_flag = False
+coach = None
 coach_response = ""
 first_response = ""
 speech_client = OpenAI()
@@ -103,10 +104,11 @@ def redirect_user():
     if practicing:
         is_finals = []
         sending_to_ridealong = False
+        socketio.emit('ui_sound',{'url':'/static/redirect.mp3'})
         print("redirecting user")
         transcription_event.set()
         practicing = False
-        alert_message = f"message from practice assistant: {ridealong_reponse['message']}. teacher transcript so far: {ridealong_reponse['context']}. interrupt gently in order to redirect (eg: some variation of 'oh hold on let's pause for a second. [feedback]'. you should use the 'start practice' command to resume practice.)"
+        alert_message = f"message from practice assistant: {ridealong_reponse['message']}. teacher transcript so far: {ridealong_reponse['context']}. interrupt gently in order to redirect (eg: some variation of 'oh hold on let's pause for a second. [feedback]'. you MUST use the 'start practice' action with your response to this prompt.)"
         current_state = State.WAITING_FOR_LLM_RESPONSE
         respond_to_user(alert_message)
 
@@ -186,12 +188,16 @@ def on_message(self, result, **kwargs):
     global coach
     global current_state
     global json_bot
+    global user
 
-    sentence = result.channel.alternatives[0].transcript
-    if len(sentence) == 0:
-        return
+    chunk = result.channel.alternatives[0].transcript
+    if len(chunk) > 1 & len(is_finals) == 0:
+        print(f"sending user speech to client: {chunk}")
+        socketio.emit('user_speech', {'speech': chunk, 'user': user})
     if result.is_final:
-        is_finals.append(sentence)
+        is_finals.append(chunk)
+        sentence = ' '.join(is_finals)
+        socketio.emit('user_speech', {'speech': sentence, 'user': user})
     # print(f"speaker: {sentence}")
 
 def on_utterance_end(self, utterance_end, **kwargs):
@@ -203,7 +209,8 @@ def on_utterance_end(self, utterance_end, **kwargs):
     end_flag = True
     final = ' '.join(is_finals)
     is_finals = []
-    emit_to_dom(final, 'user', 'chat_response')
+    socketio.emit('ui_sound', {'url':'/static/stop.mp3'})
+    # emit_to_dom(final, 'user', 'chat_response')
     current_state = State.WAITING_FOR_LLM_RESPONSE
     respond_to_user(final)
 
@@ -222,8 +229,11 @@ def on_speech_started(self, speech_started, **kwargs):
 def listen():
     global current_state, dg_connection, microphone, practicing
     global end_flag
+    global user
     cleanup()
     if current_state == State.LISTENING:
+        socketio.emit('prepare_for_user_speech', {'user': user})
+        socketio.emit('ui_sound', {'url':'/static/start.mp3'})
         emit_to_dom("nisa is <b>listening...</b>", 'ui_flag','ui_flag')
         end_flag = False
         deepgram: DeepgramClient = DeepgramClient()
@@ -240,6 +250,7 @@ def listen():
             punctuate=True,
             language="en-US",
             encoding="linear16",
+            filler_words=True,
             channels=1,
             sample_rate=16000,
             # To get UtteranceEnd, the following must be set:
@@ -247,17 +258,6 @@ def listen():
             utterance_end_ms="1500",
             vad_events=True,
         )
-        if practicing:
-            print("practicing, so different dg options")
-            options = LiveOptions(
-            model="nova-2", 
-            language="en-US", 
-            encoding="linear16",
-            smart_format=True,            
-            channels=1,
-            sample_rate=16000,
-            interim_results=True,
-            )
 
         dg_connection.start(options)
 
@@ -288,14 +288,16 @@ def on_message_live(self, result, **kwargs):
 
     batch_size = 3
 
-    sentence = result.channel.alternatives[0].transcript
-
-    if len(sentence) == 0:
-        return
-    print(f"speaker: {sentence}")
+    chunk = result.channel.alternatives[0].transcript
+    if len(chunk) > 1 & len(is_finals) == 0:
+        print(f"sending user speech to client: {chunk}")
+        socketio.emit('user_speech', {'speech': chunk, 'user': user})
+    print(f"speaker: {chunk}")
     if result.is_final:
-        is_finals.append(sentence)
-        batch.append(sentence)
+        is_finals.append(chunk)
+        sentence = ' '.join(is_finals)
+        socketio.emit('user_speech', {'speech': sentence, 'user': user})
+        batch.append(chunk)
 
     if len(batch) >= batch_size:
         if not sending_to_ridealong:
@@ -333,6 +335,9 @@ def live_transcribe():
     if current_state == State.LISTENING:
         if practicing:   # function should only be called if these are true, but just making sure.
             print("starting live transcription")
+            socketio.emit('prepare_for_user_speech', {'user': user})
+            socketio.emit('ui_sound', {'url':'/static/start.mp3'})
+            emit_to_dom("nisa is <b>taking notes...</b>", 'ui_flag','ui_flag')
             while practicing:
                 config = DeepgramClientOptions(
                             options={"keepalive": "true"}
@@ -347,6 +352,8 @@ def live_transcribe():
 
                 options: LiveOptions = LiveOptions(
                                         smart_format=True,
+                                        model="nova-2",
+                                        filler_words=True,
                                         language="en-US",
                                         encoding="linear16",
                                         channels=1,
@@ -376,6 +383,7 @@ def generate_session():
     global coach
     global first_response
     user_name = request.form['user_name']
+    # socketio.emit('ui_sound', {'url':'/static/startintro.mp3'})
     coach = Nisa("llama", user_name) # 'gpt'= gpt 4o; 'llama' = llama 3 70b via Groq; 'haiku' = claude haiku
     title = coach.practice_context['scenario'].split('Reasoning')[0][0:]
     # first_response = coach.respond("begin session. do not acknowledge receipt of this message.")
@@ -387,6 +395,7 @@ def generate_session():
         first_response = json_bot.invoke({"input":first_response})
         print(f"response from json bot: {first_response}")
         first_response = json.loads(first_response)
+    socketio.emit('ui_sound', {'url':'/static/loaded.mp3'})
     return redirect(url_for('index', user=user_name, title=title))
 
 @app.route('/index')
