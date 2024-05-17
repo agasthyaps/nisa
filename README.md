@@ -8,7 +8,7 @@ scaling high quality instructional coaching with genAI
 
 https://github.com/agasthyaps/nisa/assets/31672319/9efa4df5-dc3a-4a1c-a3c4-c509197a053a
 
-- live practice loop now integrated - nisa interrupts user as soon as it notices the need for a redirect (jump to 2:35 in the video above to see it in action)
+- live practice loop now integrated - nisa interrupts user as soon as it notices the need for a redirect (**jump to 2:35 in the video above to see it in action**)
 - some UI stuff to reduce percieved latency:
     - mic open/off audio feedback makes lets you know that nisa thinks you're done talking and is about to respond (rather than the awkward dead air in the video below)
     - live transcription of your voice on screen gives you something to look at
