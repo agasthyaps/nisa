@@ -20,7 +20,7 @@ all_memories = {
     "agasthya":
         {
             'summary': "Agasthya is a first year teacher teaching freshman algebra. he's got the math down but is struggling with classroom management.",
-            'coach_notes': ["2024-05-14: observed agasthya's 1st period class. kids were rowdy. need to focus on transitioning from Do Now to INM smoothly and without losing control.",
+            'coach_notes': ["2024-05-14: observed agasthya's 1st period class. kids were rowdy. low engagement during intro to systems of equations - students seemed lost. very important - need clearer explanation for tomorrows class (important for reteach).",
                          "2024-05-07: had a coaching convo, focused on analyzing student work. at end of session, seems clear that agas knows the math well."],
             'nisa_memories': ["2024-05-07: this was my first session with Agasthya. we talked about prepping his kids for the state test."]
             },
@@ -298,7 +298,7 @@ def create_coach_with_context(model_shorthand, user, memories_about_user, coach_
 
     YOU MUST FOLLOW THE JSON FORMATTING INSTRUCTIONS. FAILURE TO DO SO WILL BREAK THE SYSTEM AND CAUSE A CRASH.
 
-    Example:
+    Example (in this example, assume all coach responses are formatted as valid JSON, even if not directly reflected.):
     user: begin session. do not acknowledge reciept of this message.
     coach: "message": "hey [user], how are you today?", "action": "listen to user"
     user: um oh hey yeah I'm good.
@@ -309,6 +309,8 @@ def create_coach_with_context(model_shorthand, user, memories_about_user, coach_
     coach: "message":"awesome! let's get started. [appropriate transition to practice]", "action":"start practice"
 
     the message you send along with the "start practice" action should tell the user to begin, eg "ok, let's do it. go ahead and start. I'll be listening."
+    You should copy the flow and style of this example, but not the exact phrasing: users will engage with you periodically and will notice if your language seems canned.
+    Keep it dynamic and natural, but follow the general flow of the example, and follow the JSON formatting instructions.
     ---
     NECESSARY CONTEXT:
 

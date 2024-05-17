@@ -1,0 +1,41 @@
+SESSION TRANSCRIPT FOR agasthya
+Scenario: "Re-teach intro to systems of equations with clearer explanation. Reasoning: coach indication and need for re-teach."
+Look-fors: Scenario: Re-teach intro to systems of equations with clearer explanation.
+
+Look-fors:
+
+* Teacher explicitly states the objective of the re-teach, referencing the previous lesson and the need for clarification.
+* Teacher uses a concrete example or real-world application to illustrate the concept of systems of equations, making it more relatable to students.
+* Teacher breaks down the explanation into smaller, manageable chunks, using transitional phrases to connect ideas.
+* Teacher checks for understanding throughout the re-teach, using questions or prompts to ensure students are following the revised explanation.
+Thinking plan: Thinking Guide:
+
+I need to make sure I see evidence of the teacher explicitly stating the objective of the re-teach, referencing the previous lesson and the need for clarification.
+
+I also need to see the teacher use a concrete example or real-world application to illustrate the concept of systems of equations, making it more relatable to students.
+
+Additionally, I need to see the teacher break down the explanation into smaller, manageable chunks, using transitional phrases to connect ideas.
+
+Finally, I need to see the teacher check for understanding throughout the re-teach, using questions or prompts to ensure students are following the revised explanation.
+
+I also need to make sure that I'm steering them towards achieving the look-fors without being too prescriptive.
+
+So:
+
+* If I notice the teacher doesn't explicitly state the objective of the re-teach, I might ask them to rephrase it on their next round, making sure to reference the previous lesson and the need for clarification.
+* If I notice the teacher uses an abstract example or doesn't provide a real-world application, I might suggest they try using a more concrete example on their next round to make the concept more relatable to students.
+* If I notice the teacher's explanation is unclear or disjointed, I might suggest they break it down into smaller chunks and use transitional phrases to connect ideas on their next round.
+* If I notice the teacher doesn't check for understanding throughout the re-teach, I might suggest they incorporate questions or prompts to ensure students are following the revised explanation on their next round.
+* I think it's possible that the teacher will struggle to provide a clear and concise explanation. If that happens, I might give an example of a clear and concise explanation and ask them to revise their explanation on their next round.
+* I think it's possible that the teacher will want to rush through the re-teach. If that happens, I'll remind them to take their time and break down the explanation into smaller chunks.
+nisa: Hey Agasthya, how are you today?
+user: Hey. Um, okay. What's up? You wanna do?  
+nisa: Great to hear that! Your coach let me know that we should focus today's session on re-teaching intro to systems of equations with a clearer explanation. How are you feeling about that?
+user: Oh, what is this about? Where did this come from? What do you like, how did how did you get this? 
+nisa: No worries, Agasthya! I got this from your coach's notes. It seems like there was an observation of your 1st period class, and it was noted that the kids were a bit rowdy and seemed lost during the intro to systems of equations. So, we're going to work on re-teaching it with a clearer explanation today.
+user: Yeah. Okay. That that makes sense. We definitely need to work on that. They'd the exit tickets were not good. 
+nisa: Exactly! Exit tickets can be a great indicator of how well students are understanding the material. Okay, so it sounds like we're on the same page. Let's get started on re-teaching intro to systems of equations. I'll be listening in as you go through the lesson. Are you ready to give it a try?
+user: Hey. Um, hey, guys. So I want to actually come back to systems of equations. This is what we were talking about yesterday. Um, and I think, uh, we didn't really uh, we weren't on the same page. Uh, so systems and equations. Uh, here we go. Uh, systems of equations are when you have
+nisa: Oh hold on, let's pause for a second. Remember, our goal for this re-teach is to provide a clearer explanation of intro to systems of equations, clarifying any misconceptions from yesterday's lesson. Let's take a deep breath and start again, focusing on a concise definition and example to get us started. How about we try that?
+user: Okay. Um, so guys, let's talk about systems of equations.
+nisa: Oh, hold on, let's pause for a second. I want to make sure we're setting ourselves up for success here. Can you take a step back and explicitly state what systems of equations are, and how they differ from single-variable equations? Let's get a clear definition on the board before we dive in.

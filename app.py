@@ -15,6 +15,7 @@ from flask import Flask, render_template, Response, jsonify, request, redirect, 
 from flask_socketio import SocketIO, emit
 import os
 from threading import Event
+import atexit
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -38,6 +39,7 @@ transcription_event = Event()
 batch = []
 sending_to_ridealong = False
 json_bot = create_json_bot("llama")
+SESSION_TRANSCRIPT = []
 
 class State(Enum):
     IDLE = auto()
@@ -101,13 +103,16 @@ def redirect_user():
     global practicing
     global sending_to_ridealong
     global is_finals
+    global SESSION_TRANSCRIPT
     if practicing:
         is_finals = []
         sending_to_ridealong = False
         socketio.emit('ui_sound',{'url':'/static/redirect.mp3'})
+        emit_to_dom("nisa has <b>feedback!</b>", 'ui_flag','ui_flag')
         print("redirecting user")
         transcription_event.set()
         practicing = False
+        SESSION_TRANSCRIPT.append("user: " + ridealong_reponse['context'])
         alert_message = f"message from practice assistant: {ridealong_reponse['message']}. teacher transcript so far: {ridealong_reponse['context']}. interrupt gently in order to redirect (eg: some variation of 'oh hold on let's pause for a second. [feedback]'. you MUST use the 'start practice' action with your response to this prompt.)"
         current_state = State.WAITING_FOR_LLM_RESPONSE
         respond_to_user(alert_message)
@@ -158,6 +163,7 @@ def respond_to_user(user_speech):
     global current_state
     global pending_action
     global practicing
+    global SESSION_TRANSCRIPT
 
     if current_state == State.WAITING_FOR_LLM_RESPONSE:
         print(f"processing user speech: {user_speech}")
@@ -172,6 +178,8 @@ def respond_to_user(user_speech):
 
         message = coach_response['message']
         action = coach_response['action']
+
+        SESSION_TRANSCRIPT.append("nisa: " + message)
 
         emit_to_dom(message, 'nisa', 'chat_response')
         current_state = State.GENERATING_SPEECH
@@ -205,9 +213,11 @@ def on_utterance_end(self, utterance_end, **kwargs):
     global is_finals
     global current_state
     global end_flag
+    global SESSION_TRANSCRIPT
 
     end_flag = True
     final = ' '.join(is_finals)
+    SESSION_TRANSCRIPT.append("user: " + final)
     is_finals = []
     socketio.emit('ui_sound', {'url':'/static/stop.mp3'})
     # emit_to_dom(final, 'user', 'chat_response')
@@ -374,6 +384,14 @@ def live_transcribe():
                 live_microphone.finish()
                 live_dg_connection.finish()
 
+def save_session_transcript():
+    global SESSION_TRANSCRIPT
+    global user
+    timestamp = time.time()
+    filename = f"{user}_transcript_{timestamp}.txt"
+    with open(filename, 'w') as file:
+        file.write('\n'.join(SESSION_TRANSCRIPT))
+
 @app.route('/')
 def login():
     return render_template('login.html')
@@ -382,12 +400,19 @@ def login():
 def generate_session():
     global coach
     global first_response
+    global SESSION_TRANSCRIPT
     user_name = request.form['user_name']
+
     # socketio.emit('ui_sound', {'url':'/static/startintro.mp3'})
+
     coach = Nisa("llama", user_name) # 'gpt'= gpt 4o; 'llama' = llama 3 70b via Groq; 'haiku' = claude haiku
+    SESSION_TRANSCRIPT.append(f"SESSION TRANSCRIPT FOR {user_name}")
+    SESSION_TRANSCRIPT.append(f"Scenario: {coach.scenario}")
+    SESSION_TRANSCRIPT.append(f"Look-fors: {coach.look_fors}")
+    SESSION_TRANSCRIPT.append(f"Thinking plan: {coach.thinking_plan}")
     title = coach.practice_context['scenario'].split('Reasoning')[0][0:]
-    # first_response = coach.respond("begin session. do not acknowledge receipt of this message.")
-    first_response = coach.respond("hey this is the developer (my name really is agasthya but im not currently a teacher haha). just testing the system, so i might ask you to do specific functions. thanks for helping improve the system! it's very important that you still follow all formatting rules.")
+    first_response = coach.respond("begin session. do not acknowledge receipt of this message.")
+    # first_response = coach.respond("hey this is the developer (my name really is agasthya but im not currently a teacher haha). just testing the system, so i might ask you to do specific functions. thanks for helping improve the system! it's very important that you still follow all formatting rules.")
     try:
         first_response = json.loads(first_response)
     except:
@@ -413,10 +438,13 @@ def handle_initial_message():
     global current_state
     global first_response
     global pending_action
+    global SESSION_TRANSCRIPT
 
     print(f"Received 'request_initial_message' event from client with SID: {request.sid}")
     message = first_response['message']
     action = first_response['action']
+
+    SESSION_TRANSCRIPT.append("nisa: " + message)
 
     emit_to_dom(message, 'nisa', 'chat_response')
     current_state = State.GENERATING_SPEECH
@@ -442,6 +470,12 @@ def on_audio_finished():
         handle_llm_action(pending_action)
     else:
         print("Audio finished at an unexpected time.")
+
+@atexit.register
+def shutdown_hook():
+    global user 
+    if user:
+        save_session_transcript()
 
 if __name__ == '__main__':
     print("Starting SocketIO server.")
