@@ -3,6 +3,22 @@
 scaling high quality instructional coaching with genAI
 
 
+## progress as of 5.17
+
+
+https://github.com/agasthyaps/nisa/assets/31672319/9efa4df5-dc3a-4a1c-a3c4-c509197a053a
+
+- live practice loop now integrated - nisa interrupts user as soon as it notices the need for a redirect (jump to 2:35 in the video above to see it in action)
+- some UI stuff to reduce percieved latency:
+    - mic open/off audio feedback makes lets you know that nisa thinks you're done talking and is about to respond (rather than the awkward dead air in the video below)
+    - live transcription of your voice on screen gives you something to look at
+    - 'ding' on redirect interrupts user before speech is synthesized so user doesn't keep talking for too long
+- Next:
+    - nisa decides when session is done
+    - separate memory module, use session transcript to extract relevant memories, store in database
+    - still sketching out coach view (likely: text a pic of obs notes + some thoughts, AI texts you back to tell you what it thinks it should focus on with teacher, you correct it or tell it good job -> goes into database for next teacher interaction)
+    - playground on backburner for now
+
 ## progress as of 5.15
 
 
