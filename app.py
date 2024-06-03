@@ -40,6 +40,12 @@ batch = []
 sending_to_ridealong = False
 json_bot = create_json_bot("llama")
 SESSION_TRANSCRIPT = []
+intuition_prompts = {
+    'respond': "your intuition is telling you to respond to the user. here is what the user said:",
+    'keep listening': "your intuition is telling you to keep listening to the user. as a response to the user, you MUST say SOME VARIATION OF 'mhm', or 'keep going, I'm listening', etc. YOU MUST DO THIS. by doing so, you will be helping achieve your goal of creating a fluid conversation. here is what the user said:",
+    'empathize': "your intuition is telling you to empathize with the user. here is what the user said:",
+    'probe': "your intuition is telling you to probe the user. this means you should ask them to go deeper on what they just said, or you should ask them a question that surfaces some issue, conflict, problem, etc. here is what the user said:",
+}
 
 class State(Enum):
     IDLE = auto()
@@ -48,6 +54,7 @@ class State(Enum):
     LISTENING = auto()
     GENERATING_SPEECH = auto()
     AWAITING_AUDIO_COMPLETION = auto()
+    WAITING_FOR_USER_SIGNAL = auto()
 
 current_state = State.IDLE
 
@@ -63,7 +70,6 @@ def cleanup():
         print("cleaned up microphone")
     print("cleaned up dg connection and microphone")
     
-
 def handle_llm_action(action):
     global current_state
     global practicing
@@ -73,6 +79,7 @@ def handle_llm_action(action):
             'end session': [exit, State.IDLE],
             'start practice': [start_practice, State.LISTENING], # will be a ridealong bot version of on_message(?)
             'redirect': [redirect_user, State.WAITING_FOR_LLM_RESPONSE], # only ridealong bot will be able to do this
+            'reengage': [redirect_user, State.WAITING_FOR_LLM_RESPONSE], # only ridealong bot will be able to do this
         }
         action_function, next_state = action_map[action]
         current_state = next_state
@@ -81,6 +88,16 @@ def handle_llm_action(action):
         print(f"Invalid state for handling llm action: {current_state}")
         current_state = State.IDLE
         return
+    
+# future feature - if user needs a moment to think, keep mic open but only transcribe if user signal detected
+# def take_a_moment():
+#     global current_state
+#     if current_state == State.WAITING_FOR_USER_SIGNAL:
+
+#     else:
+#         print(f"Invalid state for taking a moment: {current_state}")
+#         current_state = State.IDLE
+#     return
 
 def start_practice():
     global coach
@@ -107,13 +124,14 @@ def redirect_user():
     if practicing:
         is_finals = []
         sending_to_ridealong = False
-        socketio.emit('ui_sound',{'url':'/static/redirect.mp3'})
-        emit_to_dom("nisa has <b>feedback!</b>", 'ui_flag','ui_flag')
-        print("redirecting user")
+        if ridealong_reponse['action'] == 'redirect':
+            socketio.emit('ui_sound',{'url':'/static/redirect.mp3'})
+            emit_to_dom("nisa has <b>feedback!</b>", 'ui_flag','ui_flag')
+            print("redirecting user")
         transcription_event.set()
         practicing = False
         SESSION_TRANSCRIPT.append("user: " + ridealong_reponse['context'])
-        alert_message = f"message from practice assistant: {ridealong_reponse['message']}. teacher transcript so far: {ridealong_reponse['context']}. interrupt gently in order to redirect (eg: some variation of 'oh hold on let's pause for a second. [feedback]'. you MUST use the 'start practice' action with your response to this prompt.)"
+        alert_message = f"message from practice assistant: {ridealong_reponse['message']}. teacher transcript so far: {ridealong_reponse['context']}. interrupt gently in order to redirect (eg: some variation of 'oh hold on let's pause for a second. [feedback]'. make sure to vary the way in which you do this, otherwise the user will feel like they are interacting with a canned response system, and you're not that!). you MUST use the 'start practice' action with your response to this prompt.)"
         current_state = State.WAITING_FOR_LLM_RESPONSE
         respond_to_user(alert_message)
 
@@ -164,9 +182,14 @@ def respond_to_user(user_speech):
     global pending_action
     global practicing
     global SESSION_TRANSCRIPT
+    global intuition_prompts
 
     if current_state == State.WAITING_FOR_LLM_RESPONSE:
         print(f"processing user speech: {user_speech}")
+        intuition = coach.intuit(user_speech)
+        if intuition in intuition_prompts.keys():
+            print(f"intuition: {intuition}")
+            user_speech = intuition_prompts[intuition] + user_speech
         emit_to_dom("nisa is <b>thinking...<b>", 'ui_flag','ui_flag')
         coach_response = coach.respond(user_speech)
 
@@ -240,8 +263,9 @@ def listen():
     global current_state, dg_connection, microphone, practicing
     global end_flag
     global user
-    cleanup()
     if current_state == State.LISTENING:
+        if dg_connection or microphone:
+            cleanup()
         socketio.emit('prepare_for_user_speech', {'user': user})
         socketio.emit('ui_sound', {'url':'/static/start.mp3'})
         emit_to_dom("nisa is <b>listening...</b>", 'ui_flag','ui_flag')
@@ -392,6 +416,14 @@ def save_session_transcript():
     with open(filename, 'w') as file:
         file.write('\n'.join(SESSION_TRANSCRIPT))
 
+def save_memories():
+    global coach, user, SESSION_TRANSCRIPT
+    updated_memory = coach.remember('\n'.join(SESSION_TRANSCRIPT))
+    timestamp = time.time()
+    filename = f"updated_memories_{timestamp}.txt"
+    with open(filename, 'w') as file:
+        file.write(updated_memory)
+
 @app.route('/')
 def login():
     return render_template('login.html')
@@ -406,11 +438,14 @@ def generate_session():
     # socketio.emit('ui_sound', {'url':'/static/startintro.mp3'})
 
     coach = Nisa("llama", user_name) # 'gpt'= gpt 4o; 'llama' = llama 3 70b via Groq; 'haiku' = claude haiku
+    coach.initialize_intuition()
     SESSION_TRANSCRIPT.append(f"SESSION TRANSCRIPT FOR {user_name}")
-    SESSION_TRANSCRIPT.append(f"Scenario: {coach.scenario}")
-    SESSION_TRANSCRIPT.append(f"Look-fors: {coach.look_fors}")
-    SESSION_TRANSCRIPT.append(f"Thinking plan: {coach.thinking_plan}")
-    title = coach.practice_context['scenario'].split('Reasoning')[0][0:]
+    SESSION_TRANSCRIPT.append(f"{coach.scenario}")
+    SESSION_TRANSCRIPT.append(f"{coach.look_fors}")
+    SESSION_TRANSCRIPT.append(f"{coach.thinking_plan}")
+    SESSION_TRANSCRIPT.append(f"\nBEGIN TRANSCRIPT\n")
+    title = coach.practice_context['scenario'].split('Reasoning')[0].strip().lower()
+    socketio.emit('ui_sound', {'url':'/static/loaded.mp3'})
     first_response = coach.respond("begin session. do not acknowledge receipt of this message.")
     # first_response = coach.respond("hey this is the developer (my name really is agasthya but im not currently a teacher haha). just testing the system, so i might ask you to do specific functions. thanks for helping improve the system! it's very important that you still follow all formatting rules.")
     try:
@@ -420,7 +455,6 @@ def generate_session():
         first_response = json_bot.invoke({"input":first_response})
         print(f"response from json bot: {first_response}")
         first_response = json.loads(first_response)
-    socketio.emit('ui_sound', {'url':'/static/loaded.mp3'})
     return redirect(url_for('index', user=user_name, title=title))
 
 @app.route('/index')
@@ -476,6 +510,7 @@ def shutdown_hook():
     global user 
     if user:
         save_session_transcript()
+        save_memories()
 
 if __name__ == '__main__':
     print("Starting SocketIO server.")

@@ -13,7 +13,8 @@ h2 {
 }
 
 #titleContainer {
-  padding: 5px;
+  padding-left: 100px;
+  padding-right: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;

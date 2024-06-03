@@ -22,7 +22,7 @@ all_memories = {
             'summary': "Agasthya is a first year teacher teaching freshman algebra. he's got the math down but is struggling with classroom management.",
             'coach_notes': ["2024-05-14: observed agasthya's 1st period class. kids were rowdy. low engagement during intro to systems of equations - students seemed lost. very important - need clearer explanation for tomorrows class (important for reteach).",
                          "2024-05-07: had a coaching convo, focused on analyzing student work. at end of session, seems clear that agas knows the math well."],
-            'nisa_memories': ["2024-05-07: this was my first session with Agasthya. we talked about prepping his kids for the state test."]
+            'nisa_memories': ["I have never met Agasthya before. He is new to the platform."]
             },
     "adam":
         {
@@ -34,7 +34,7 @@ all_memories = {
     "merlin":
         {
             'summary': "Merlin is a 5th year teacher teaching 10th grade english. He's interested in different lesson models like inquiry-based teaching.",
-            'coach_notes': ["2024-05-14: observed merlin's 3rd period class. kids were quitely working. asked one student to explain the assignment and they did so clearly.",
+            'coach_notes': ["2024-05-14: observed merlin's 3rd period class. kids were quitely working. asked one student to explain the assignment and he did so clearly.",
                          "2024-05-07: had a coaching convo about planning for final novel. thinking of some ways to make the text come alive instead of standard close reading."],
             'nisa_memories': ["2024-05-07: this was my first session with Merlin. He told me that he's really into anime and wants to take his students to Japan one day."]
             },
@@ -57,7 +57,7 @@ all_memories = {
             'summary': "Abhi is a 6th year teacher teaching 11th grade physics. He's interested in incorporating more hands-on labs into his curriculum.",
             'coach_notes': ["2024-05-14: observed abhi's 4th period class. kids were working on worksheets. quiet but focused, abhi was circulating. focus: how to get kids to talk more about their thinking.",
                             "2024-05-07: had a coaching convo about the upcoming unit on electricity. abhi is worried about the labs."],
-            'nisa_memories': ["2024-05-07: this was my second session with Abhi. We talked about how he feels like the AP Physics teacher gets more support than him"]
+            'nisa_memories': ["2024-05-07: this was my second session with Abhi. We tal ked about how he feels like the AP Physics teacher gets more support than him"]
             
         },
     "sarah":
@@ -404,6 +404,51 @@ class Nisa:
         response = conversation_engine(self.ridealong, input)
         return response
     
+    def remember(self, transcript):
+        make_memories(self.user, transcript)
+
+    def initialize_intuition(self):
+        intuition_system_prompt = """
+        you choose the next action for a teacher coach to make during a conversation with a teacher given a snippet of the transcript of the current conversation. 
+        the available actions are: ["respond","keep listening","empathize","probe"].
+
+        example 1:
+        input:
+        nisa: Hey user, how's it going today?
+        user: Um, it's going pretty good. How about you?
+        output:
+        respond
+
+        example 2:
+        nisa: Your coach shared some observations from your 1st period class, and I also have some notes from our previous conversations. It's all part of our coaching process to help you grow as a teacher. Shall we get started on that re-teach?
+        user: Um, I don't know if I am, like, in the right mindset that right now.
+        output:
+        keep listening
+
+        example 3:
+        input:
+        nisa: I'm doing well, thanks! So, I understand you've been working on teaching freshman algebra. How's the experience been so far?
+        user: Uh, it's been up and down, I guess.
+        output:
+        empathize
+
+        example 4:
+        nisa: No worries! Your coach mentioned we should focus on re-teaching the intro to systems of equations with a clear explanation. How do you feel about that?
+        user: Um, I don't know how I feel about that because, like,  I feel like I get the math really well, and I explain it really well.
+        output:
+        probe
+        ---
+        - "respond" is for general conversational responses, responses to questions from users, moving the conversation along. you will use this most often. no restrictions on how often to use this.
+        - "keep listening" is when it seems that the user still has more to say. may not use twice in a row.
+        - "empathize" is for when the user seems to be expressing a feeling or emotion, especially feelings of uncertainty, stress, frustration, etc. may not use twice in a row.
+        - "probe" is for when the user seems to be expressing a thought or idea that needs further exploration, or if the user seems to be putting up a barrier to the conversation. may not use twice in a row.
+        """
+        self.intuition = initialize_chain("llama",intuition_system_prompt,history=True)
+
+    def intuit(self, input):
+        response = conversation_engine(self.intuition, input)
+        return response
+    
     def initiate_ridealong(self,model_shorthand):
         ridealong_prompt = """
         You are a seasoned instructional coach with deep experience in classroom observation and pedagogical best practices. You are observing a practice session between a teacher and an instructional coach.
@@ -418,8 +463,9 @@ class Nisa:
         YOUR JOB: review the chunk you have just recieved as well as the rest entirety of the response you have so accumulated so far.
         IF YOU NOTICE THE TEACHER VEERING OFF TRACK: respond with JSON. Example: "message":"the teacher needs to be redirected. try giving them support by providing different options for how to talk about condensation.", "action":"redirect", "context":all the text the teacher has said so far
         IF YOU NOTICE THE TEACHER IS DOING WELL: respond with JSON. Example: "message":"the teacher is doing well, because [concise reason]", "action":"continue", "context":[relevant text from the teacher's response so far]
+        IF YOU NOTICE THE TEACHER IS ASKING FOR HELP OR TRYING TO CONTINUE CONVERSING: respond with JSON. Example: "message":"the teacher is asking for help. try to provide support.", "action":"reengage", "context":[relevant text from the teacher's response so far]  
         IF YOU NOTICE THE TEACHER HAS ACHIEVED ALL THE LOOK-FORS: respond with JSON. Example: "message":"the teacher has met all the look-fors for the scenario. end the practice session.","action":"end practice", "context":empty
-        YOUR ONLY OPTIONS FOR "action" ARE "redirect", "continue", AND "end practice".
+        YOUR ONLY OPTIONS FOR "action" ARE "redirect", "continue", "reengage" AND "end practice".
 
         ---
 
@@ -468,6 +514,33 @@ class Nisa:
 
         incoming message:"so, to recap: when I say go, you're going to start working on your own. I want you to remember to stay focused and work quietly. If you have any questions, you can raise your hand and I'll come over to help you. Ok, go ahead and get started."
         response:"message":empty,"action":"continue", "context":empty
+
+        EXAMPLE 3:
+        scenario: Re-teach intro to systems of equations with clearer explanation.
+
+        look-fors:
+        * Teacher explicitly states the importance of understanding systems of equations in real-world applications.
+        * Teacher uses a visual-free analogy or relatable example to explain the concept of systems of equations.
+        * Teacher breaks down the concept into smaller, manageable chunks, using phrases such as "first, let's...", "next, we...", and "finally...".
+        * Teacher checks for understanding by asking questions that prompt students to explain their thinking, such as "How does this relate to what we learned earlier?" or "Can you explain why this equation is a system?"
+        
+        thinking guide:
+        I need to make sure I see evidence of the teacher explicitly stating the importance of understanding systems of equations in real-world applications. 
+        I also need to see the teacher use a visual-free analogy or relatable example to explain the concept of systems of equations. 
+        I need to see the teacher break down the concept into smaller, manageable chunks, using phrases such as "first, let's...", "next, we...", and "finally...".
+        Finally, I need to see the teacher check for understanding by asking questions that prompt students to explain their thinking.
+
+        I also need to make sure that I'm steering them towards achieving the look-fors without being too prescriptive.
+
+        So:
+        - if I notice the teacher doesn't explicitly state the importance of understanding systems of equations, I might ask them to elaborate on why this concept is important in real-world applications on their next round.
+        - if I notice the teacher uses a visual aid instead of an analogy or relatable example, I might suggest they try using a different approach to explain the concept on their next round.
+        - if I notice the teacher doesn't break down the concept into smaller chunks, I might suggest they try using transitional phrases to guide students through the explanation on their next round.
+        - I think it's possible that the teacher will struggle to come up with a relatable example. If that happens, I might give an example of a real-world application of systems of equations and ask them to come up with their own example on their next round.
+        - I think it's possible that the teacher will rush through the explanation. If that happens, I might suggest they slow down and break down the concept into smaller chunks on their next round.
+
+        incoming message: "Uh, no. I'm not ready. I'm not ready.  Can you can you just give me an an example?"
+        response: "message":"the teacher needs some help to get started. reengage a bit before restarting practice.","action":"reengage", "context":"Uh, no. I'm not ready. I'm not ready.  Can you can you just give me an an example?"
         ---
         FINALLY:
         It is better to lean towards strictness: this will only help the teacher improve. if you are too lenient, the teacher will not improve as much as they could.
@@ -486,7 +559,7 @@ class Nisa:
 
         Here is the output schema:
         ```
-        {{"properties": {{"message": {{"title": "Message", "description": "message to coach", "type": "string"}}, "action": {{"title": "Action", "description": "the action you want the system to take after responding to the user. options are: redirect, continue, end practice", "type": "string"}}, "context":{{"title":"Context","description":"the running transcript of what the teacher has said so far","type":"string"}}}}, "required": ["message", "action","context"]}}
+        {{"properties": {{"message": {{"title": "Message", "description": "message to coach", "type": "string"}}, "action": {{"title": "Action", "description": "the action you want the system to take after responding to the user. options are: redirect, reengage, continue, end practice", "type": "string"}}, "context":{{"title":"Context","description":"the running transcript of what the teacher has said so far","type":"string"}}}}, "required": ["message", "action","context"]}}
         ```
         """ 
         self.ridealong = initialize_chain(model_shorthand,ridealong_prompt)
