@@ -1,0 +1,45 @@
+SESSION TRANSCRIPT FOR agasthya
+"Re-teach intro to systems of equations. Reasoning: coach indication and math content knowledge."
+Scenario: Re-teach intro to systems of equations. Reasoning: coach indication and math content knowledge.
+
+Look-fors:
+
+* Teacher explicitly states the concept of a system of equations and its importance in real-world applications
+* Teacher uses the phrase "two or more equations with variables" to define a system of equations
+* Teacher provides an example of a simple system of equations, such as 2x + 3y = 7 and x - 2y = -3, and asks students to identify the variables and constants
+* Teacher emphasizes the concept of "solution" as the point of intersection of the two equations, using language such as "where the lines cross" or "the point that satisfies both equations"
+Thinking Guide:
+
+I need to make sure I see evidence of the teacher explicitly stating the concept of a system of equations and its importance in real-world applications.
+
+I also need to see the teacher use the phrase "two or more equations with variables" to define a system of equations.
+
+Additionally, I need to see the teacher provide an example of a simple system of equations and ask students to identify the variables and constants.
+
+Finally, I need to see the teacher emphasize the concept of "solution" as the point of intersection of the two equations, using language such as "where the lines cross" or "the point that satisfies both equations".
+
+I also need to make sure that I'm steering them towards achieving the look-fors without being too prescriptive.
+
+So:
+
+* If I notice the teacher doesn't explicitly state the importance of systems of equations in real-world applications, I might ask them to consider how they can connect the concept to students' everyday lives on their next round.
+* If I notice the teacher doesn't use the phrase "two or more equations with variables" to define a system of equations, I might suggest they try using it on their next round to increase precision.
+* If I notice the teacher provides an overly complex example of a system of equations, I might suggest they try using a simpler example, such as the one provided, to help students understand the concept.
+* I think it's possible that the teacher will struggle to explain the concept of "solution" in a clear and concise way. If that happens, I might provide an example of how to explain it, such as using a visual representation of two lines intersecting, and ask them to try it on their next round.
+* I think it's possible that the teacher will want to jump into the procedure of solving systems of equations without taking the time to thoroughly introduce the concept. If that happens, I'll remind them to slow down and ensure students understand the basics before moving forward.
+
+BEGIN TRANSCRIPT
+
+nisa: Hey Agasthya, how are you today? Your coach told me about their observation, and we've put together a quick practice session for you. Sound good?
+user: Yeah. Cool.
+nisa: Great! I'm looking forward to working with you. How are you feeling about re-teaching intro to systems of equations?
+user: I'm feeling good about it.
+nisa: Awesome! I've heard you're strong in math content knowledge, so I'm sure you'll do great. Let's focus on making it more engaging for your students. Shall we get started?
+user:  Yeah. Let's do it. 
+nisa: Ok, let's do it! Go ahead and start re-teaching intro to systems of equations. I'll be listening.
+user: Okay. So um, systems or equations are  Like,
+nisa: Hold on just a sec, Agasthya. Before you dive in, can you take a step back and explicitly state what a system of equations is and why it's important in real-world applications? Let's make sure we're setting our students up for success.
+user: Yeah. Okay.  So.
+nisa: Let's take a breath, Agasthya. Instead of diving in, let's explore some options for introducing systems of equations. You could start with a real-world scenario, like a problem that requires multiple variables, or ask students what they already know about equations. Maybe you could even use a visual representation, like a graph or chart. Which direction do you want to take?
+user: Interesting. Okay. Step
+nisa: Okay, Agasthya, let's hit the reset button. Before we move forward, can you start again with a clear and concise introduction to systems of equations? Take a deep breath and try setting the stage for your students. What are systems of equations, and why do they matter?

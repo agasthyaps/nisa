@@ -16,6 +16,8 @@ from flask_socketio import SocketIO, emit
 import os
 from threading import Event
 import atexit
+from elevenlabs import VoiceSettings
+from elevenlabs.client import ElevenLabs
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -26,7 +28,10 @@ end_flag = False
 coach = None
 coach_response = ""
 first_response = ""
-speech_client = OpenAI()
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+speech_client = ElevenLabs(
+    api_key=ELEVENLABS_API_KEY,
+)
 pending_action = None
 user = None
 last_audio = None
@@ -42,8 +47,8 @@ json_bot = create_json_bot("llama")
 SESSION_TRANSCRIPT = []
 intuition_prompts = {
     'respond': "your intuition is telling you to respond to the user. here is what the user said:",
-    'keep listening': "your intuition is telling you to keep listening to the user. as a response to the user, you MUST say SOME VARIATION OF 'mhm', or 'keep going, I'm listening', etc. YOU MUST DO THIS. by doing so, you will be helping achieve your goal of creating a fluid conversation. here is what the user said:",
-    'empathize': "your intuition is telling you to empathize with the user. here is what the user said:",
+    'keep listening': "your intuition is telling you to keep listening to the user. as a response to the user, you MUST say A VARIATION OF 'say more about that', etc. YOU MUST DO THIS. by doing so, you will be helping achieve your goal of creating a fluid conversation. stay on track: if you have already responded in this manner recently, you may ignore your intuition. here is what the user said:",
+    'empathize': "your intuition is telling you to empathize with the user. empathize, but stay on track. here is what the user said:",
     'probe': "your intuition is telling you to probe the user. this means you should ask them to go deeper on what they just said, or you should ask them a question that surfaces some issue, conflict, problem, etc. here is what the user said:",
 }
 
@@ -151,13 +156,33 @@ def text_to_speech(message):
 
     filepath = f"{audio_directory}response{random.randint(1,1000)}.wav"
 
-    with speech_client.audio.speech.with_streaming_response.create(
-        model="tts-1",
-        voice="nova",
-        input=message,
-        response_format="wav",
-    ) as response:
-        response.stream_to_file(filepath)
+    # with speech_client.audio.speech.with_streaming_response.create(
+    #     model="tts-1",
+    #     voice="nova",
+    #     input=message,
+    #     response_format="wav",
+    # ) as response:
+    #     response.stream_to_file(filepath)
+
+    response = speech_client.text_to_speech.convert(
+        voice_id="P7x743VjyZEOihNNygQ9",  
+        optimize_streaming_latency="0",
+        output_format="mp3_22050_32",
+        text=message,
+        model_id="eleven_multilingual_v2",  # use the turbo model for low latency, for other languages use the `eleven_multilingual_v2`
+        voice_settings=VoiceSettings(
+            stability=0.5,
+            similarity_boost=.75,
+            style=0.0,
+            use_speaker_boost=False,
+        ),
+    )
+    # Writing the audio stream to the file
+    with open(filepath, "wb") as f:
+        for chunk in response:
+            if chunk:
+                f.write(chunk)
+    
     last_audio = filepath
     return filepath
 

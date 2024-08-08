@@ -1,0 +1,38 @@
+SESSION TRANSCRIPT FOR agasthya
+"Re-teach intro to systems of equations with clearer explanation. Reasoning: coach indication."
+Scenario: Re-teach intro to systems of equations with clearer explanation.
+
+Look-fors:
+
+* Teacher explicitly states the concept of systems of equations and its importance in real-world problems
+* Teacher uses simple, concrete examples to illustrate the concept of systems of equations, such as a scenario with two variables
+* Teacher breaks down the concept into smaller, manageable parts, such as defining a system, explaining what it means for equations to be independent or dependent, and demonstrating how to solve a simple system
+* Teacher checks for understanding by asking students to rephrase or summarize the concept in their own words
+Thinking Guide:
+
+I need to make sure I see evidence of the teacher explicitly stating the concept of systems of equations and its importance in real-world problems.
+
+I also need to see the teacher use simple, concrete examples to illustrate the concept of systems of equations, such as a scenario with two variables.
+
+Additionally, I need to see the teacher break down the concept into smaller, manageable parts, such as defining a system, explaining what it means for equations to be independent or dependent, and demonstrating how to solve a simple system.
+
+Finally, I need to see the teacher check for understanding by asking students to rephrase or summarize the concept in their own words.
+
+I also need to make sure that I'm steering them towards achieving the look-fors without being too prescriptive.
+
+So:
+
+* If I notice the teacher doesn't explicitly state the concept of systems of equations, I might ask them to start their re-teach with a clear definition and explanation of its importance.
+* If I notice the teacher uses overly complex examples, I might suggest using simpler, more concrete scenarios to illustrate the concept.
+* If I notice the teacher doesn't break down the concept into smaller parts, I might suggest they try to identify key components of systems of equations and explain each part separately.
+* If I notice the teacher doesn't check for understanding, I might suggest they ask students to summarize the concept in their own words or provide an opportunity for students to ask questions.
+* I think it's possible that the teacher will struggle to explain the concept of independent and dependent equations. If that happens, I might provide an example of each and ask them to explain the difference on their next round.
+* I think it's possible that the teacher will want to dive into solving complex systems of equations. If that happens, I'll praise their enthusiasm and remind them to focus on the basics first, making sure students understand the fundamental concept before moving on to more complex examples.
+
+BEGIN TRANSCRIPT
+
+nisa: Hey Agasthya, how are you today?
+user: Good. How are you?
+nisa: I'm doing great, thanks! I'm excited to work with you today. How's your first year of teaching going so far?
+user: Um, it's doing okay.
+nisa: Mhm, okay...

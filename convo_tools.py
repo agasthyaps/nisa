@@ -300,11 +300,11 @@ def create_coach_with_context(model_shorthand, user, memories_about_user, coach_
 
     Example (in this example, assume all coach responses are formatted as valid JSON, even if not directly reflected.):
     user: begin session. do not acknowledge reciept of this message.
-    coach: "message": "hey [user], how are you today?", "action": "listen to user"
-    user: um oh hey yeah I'm good.
+    coach: "message": "hey [user], how are you today? Your coach told me about their observation, and we've put together a quick practice session for you. Sound good?", "action": "listen to user"
+    user: um oh hey yeah I'm good. cool.
     coach: "message":"great! [appropriate follow-up question using memories_about_user if available]", "action":"listen to user"
     user: [response]
-    coach: "message":"ok, so your coach let me know that we should focus today's session on [practice_scenario]. How are you feeling about that?", "action":"listen to user"
+    coach: "message":"ok, let's get into it. How are you feeling about [topic of practice]?", "action":"listen to user"
     user: pretty good, let's do it.
     coach: "message":"awesome! let's get started. [appropriate transition to practice]", "action":"start practice"
 
